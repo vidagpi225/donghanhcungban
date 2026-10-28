@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sổ Tay Đáng Yêu 🎀</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Override the default "pink" palette to use our dynamic theme variables
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pink: {
+                            50: 'var(--theme-50)',
+                            100: 'var(--theme-100)',
+                            200: 'var(--theme-200)',
+                            400: 'var(--theme-400)',
+                            500: 'var(--theme-500)',
+                            600: 'var(--theme-600)',
+                            700: 'var(--theme-700)',
+                            900: 'var(--theme-900)'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Inter:wght@400;500&family=Lora:ital,wght@0,400;1,400&family=Dancing+Script:wght@600&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+    <style>
+        /* Base Theme Variables */
+        :root {
+            --theme-50: #fdf2f8;
+            --theme-100: #fce7f3;
+            --theme-200: #fbcfe8;
+            --theme-400: #f472b6;
+            --theme-500: #ec4899;
+            --theme-600: #db2777;
+            --theme-700: #be185d;
+            --theme-900: #831843;
+        }
+
+        /* Base cute font for UI */
+        body { font-family: 'Quicksand', sans-serif; background-color: var(--theme-50); }
+        /* Cute Checkbox animation */
+        .task-checkbox:checked + label { text-decoration: line-through; color: #a1a1aa; font-style: italic; }
+        
+        /* Glassmorphism for cute vibe */
+        .glass-cute {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 2px solid #fdf2f8;
+        }
+
+        /* Sửa lỗi hiển thị: Ẩn các tab không được chọn */
+        .tab-content {
+            display: none !important;
+        }
+        .tab-content.active {
+            display: block !important;
+        }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row h-screen overflow-hidden text-gray-700 bg-pink-50">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden bg-white/90 backdrop-blur shadow-sm border-b border-pink-100 p-4 flex justify-between items-center z-40">
+        <h1 class="text-xl font-bold text-pink-500 flex items-center gap-2">
+            🎀 MySpace
+        </h1>
+        <button onclick="toggleMobileMenu()" class="text-pink-500 hover:bg-pink-50 p-2 rounded-xl transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-pink-900/20 backdrop-blur-sm z-40 hidden md:hidden transition-opacity opacity-0"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed md:relative w-72 h-full glass-cute shadow-[4px_0_24px_rgba(251,207,232,0.4)] flex flex-col z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex-shrink-0">
+        <div class="p-6 pb-4 border-b border-pink-100 hidden md:block">
+            <h1 class="text-2xl font-bold text-pink-500 flex items-center gap-2">
+                🎀 MySpace
+            </h1>
+            <p class="text-xs text-pink-400 mt-1 font-medium">Góc nhỏ đáng yêu của bạn ✨</p>
+        </div>
+
+        <!-- Mobile Close Button -->
+        <div class="p-4 md:hidden flex justify-end border-b border-pink-100">
+            <button onclick="toggleMobileMenu()" class="text-pink-400 hover:text-pink-600 bg-pink-50 p-2 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-3 overflow-y-auto">
+            <button onclick="switchTab('diary')" id="btn-diary" class="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all font-bold text-left text-pink-600 bg-pink-100 shadow-[0_4px_14px_rgba(251,207,232,0.6)] transform hover:scale-[1.02]">
+                <span class="text-xl">📝</span> Nhật ký
+            </button>
+            <button onclick="switchTab('tasks')" id="btn-tasks" class="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all font-semibold text-left text-gray-500 hover:bg-pink-50 hover:text-pink-500 border border-transparent hover:border-pink-100">
+                <span class="text-xl">📅</span> Kế hoạch
+            </button>
+            <button onclick="switchTab('stats')" id="btn-stats" class="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all font-semibold text-left text-gray-500 hover:bg-pink-50 hover:text-pink-500 border border-transparent hover:border-pink-100">
+                <span class="text-xl">📊</span> Thống kê
+            </button>
+        </nav>
+
+        <!-- Theme Selector -->
+        <div class="p-5 border-t border-pink-100 bg-white/50">
+            <h3 class="text-sm font-bold text-pink-400 mb-3 flex items-center gap-2">
+                🎨 Màu sắc
+            </h3>
+            <div class="flex gap-2 flex-wrap">
+                <button onclick="setTheme('pink')" class="w-6 h-6 rounded-full bg-[#f472b6] border-2 border-white shadow-sm hover:scale-110 transition-transform"></button>
+                <button onclick="setTheme('blue')" class="w-6 h-6 rounded-full bg-[#60a5fa] border-2 border-white shadow-sm hover:scale-110 transition-transform"></button>
+                <button onclick="setTheme('green')" class="w-6 h-6 rounded-full bg-[#4ade80] border-2 border-white shadow-sm hover:scale-110 transition-transform"></button>
+                <button onclick="setTheme('red')" class="w-6 h-6 rounded-full bg-[#f87171] border-2 border-white shadow-sm hover:scale-110 transition-transform"></button>
+                <button onclick="setTheme('brown')" class="w-6 h-6 rounded-full bg-[#a8a29e] border-2 border-white shadow-sm hover:scale-110 transition-transform"></button>
+                <button onclick="setTheme('black')" class="w-6 h-6 rounded-full bg-[#52525b] border-2 border-white shadow-sm hover:scale-110 transition-transform"></button>
+                <button onclick="setTheme('white')" class="w-6 h-6 rounded-full bg-[#e2e8f0] border-2 border-white shadow-sm hover:scale-110 transition-transform"></button>
+            </div>
+        </div>
+
+        <!-- Cute Music Player Section -->
+        <div class="p-5 border-t border-pink-100 bg-white/50 rounded-t-3xl mt-auto">
+            <h3 class="text-sm font-bold text-pink-400 mb-3 flex items-center gap-2">
+                🎧 Góc Chill
+            </h3>
+            <div class="flex gap-2 mb-3">
+                <input type="text" id="music-url" placeholder="Dán link YouTube/Spotify..." class="w-full text-xs px-4 py-2.5 rounded-xl border-2 border-pink-100 focus:outline-none focus:border-pink-300 focus:ring-4 focus:ring-pink-100 transition-all shadow-inner">
+                <button onclick="loadMusic()" class="bg-pink-400 hover:bg-pink-500 text-white p-2.5 rounded-xl transition-all shadow-[0_4px_10px_rgba(244,114,182,0.4)] transform hover:scale-105 active:scale-95">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </button>
+            </div>
+            <div id="music-player-container" class="rounded-2xl overflow-hidden bg-pink-50 flex items-center justify-center min-h-[90px] border border-pink-100 shadow-sm transition-all">
+                <div class="text-center p-3 animate-pulse">
+                    <span class="text-2xl block mb-1">🎶</span>
+                    <p class="text-[11px] text-pink-400 font-medium">Nhập link để nghe nhạc nha!</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto relative w-full">
+        
+        <!-- Cute Toast Notification -->
+        <div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-white border-2 border-pink-200 text-pink-600 px-6 py-3 rounded-full shadow-[0_10px_25px_rgba(251,207,232,0.5)] transition-all duration-300 opacity-0 -translate-y-10 pointer-events-none z-50 font-bold flex items-center gap-2">
+            <span id="toast-icon">✨</span>
+            <span id="toast-msg">Thông báo</span>
+        </div>
+
+        <!-- 1. DIARY TAB -->
+        <div id="tab-diary" class="tab-content active h-full p-4 md:p-8 lg:p-10">
+            <div class="max-w-4xl mx-auto h-full flex flex-col">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-1 flex items-center gap-2">
+                            Nhật ký hôm nay 🌸
+                        </h2>
+                        <p class="text-pink-400 text-sm font-medium" id="current-date-text"></p>
+                    </div>
+                    <div class="flex items-center gap-2 bg-white p-2 rounded-2xl shadow-sm border border-pink-100 w-full md:w-auto">
+                        <label class="text-sm font-bold text-gray-500 pl-2">Font:</label>
+                        <select id="diary-font-select" onchange="changeDiaryFont()" class="bg-pink-50 border-none text-pink-700 text-sm font-semibold rounded-xl focus:ring-0 block p-2 cursor-pointer w-full md:w-auto outline-none">
+                            <option value="font-quicksand">Đáng yêu (Quicksand)</option>
+                            <option value="font-inter">Mặc định (Inter)</option>
+                            <option value="font-lora">Cổ điển (Lora)</option>
+                            <option value="font-dancing">Nghệ thuật (Dancing)</option>
+                            <option value="font-fira">Code (Fira)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex-1 bg-white rounded-[32px] shadow-[0_8px_30px_rgba(253,164,175,0.15)] border-4 border-pink-50 p-2 md:p-4 flex flex-col relative group">
+                    <!-- The paper background applies only to the textarea -->
+                    <textarea id="diary-content" oninput="autoSaveDiary()" class="w-full h-full p-4 md:p-6 bg-transparent resize-none focus:outline-none text-gray-700 font-quicksand transition-all rounded-2xl" placeholder="Hôm nay có chuyện gì vui kể mình nghe với... ☁️"></textarea>
+                    
+                    <div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <span id="save-status" class="text-xs text-pink-500 bg-pink-100 px-4 py-2 rounded-full flex items-center gap-1.5 shadow-sm font-bold border border-pink-200">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            Đã lưu tự động!
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. TASKS & CALENDAR TAB -->
+        <div id="tab-tasks" class="tab-content h-full p-4 md:p-8 lg:p-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
+                        Kế hoạch tuần này 🚀
+                    </h2>
+                    <button onclick="clearCompletedTasks()" class="w-full md:w-auto text-sm text-rose-500 bg-rose-50 hover:bg-rose-100 px-5 py-2.5 rounded-2xl transition-all font-bold flex items-center justify-center gap-2 border border-rose-100 shadow-sm hover:shadow">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Dọn dẹp việc đã xong
+                    </button>
+                </div>
+
+                <!-- Grid 7 days - Responsive -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 pb-20" id="calendar-grid">
+                    <!-- Days generated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. STATISTICS TAB -->
+        <div id="tab-stats" class="tab-content h-full p-4 md:p-8 lg:p-10">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 md:mb-8 flex items-center gap-2">
+                    Thống kê chăm chỉ 🌟
+                </h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                    <!-- Progress Card -->
+                    <div class="bg-white rounded-[32px] p-8 shadow-[0_8px_30px_rgba(253,164,175,0.15)] border-4 border-pink-50 flex flex-col items-center justify-center relative overflow-hidden">
+                        <!-- Cute decorative blobs -->
+                        <div class="absolute -top-10 -right-10 w-32 h-32 bg-pink-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+                        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-yellow-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+
+                        <h3 class="text-lg font-bold text-gray-600 mb-8 z-10">Tiến độ hoàn thành</h3>
+                        
+                        <div class="relative w-56 h-56 flex items-center justify-center z-10">
+                            <!-- SVG Circular Progress with rounded caps and shadow -->
+                            <svg class="w-full h-full transform -rotate-90 filter drop-shadow-md">
+                                <circle cx="112" cy="112" r="90" stroke="currentColor" stroke-width="18" fill="transparent" class="text-gray-100" />
+                                <circle id="progress-circle" cx="112" cy="112" r="90" stroke="url(#gradient)" stroke-width="18" fill="transparent" class="transition-all duration-1000 ease-out" stroke-dasharray="565.48" stroke-dashoffset="565.48" stroke-linecap="round" />
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="var(--theme-400)" />
+                                        <stop offset="100%" stop-color="var(--theme-500)" />
+                                    </linearGradient>
+                                    <linearGradient id="gradient-success" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#34d399" /> <!-- emerald-400 -->
+                                        <stop offset="100%" stop-color="#10b981" /> <!-- emerald-500 -->
+                                    </linearGradient>
+                                    <linearGradient id="gradient-warning" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#fbbf24" /> <!-- amber-400 -->
+                                        <stop offset="100%" stop-color="#f59e0b" /> <!-- amber-500 -->
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span id="progress-text" class="text-5xl font-extrabold text-pink-500">0%</span>
+                            </div>
+                        </div>
+                        
+                        <p id="motivation-text" class="mt-8 text-pink-500 text-center font-bold text-lg z-10 bg-pink-50 px-6 py-2 rounded-2xl border border-pink-100">
+                            Hãy thêm công việc để bắt đầu! 🌻
+                        </p>
+                    </div>
+
+                    <!-- Details Card -->
+                    <div class="flex flex-col gap-5">
+                        <!-- Total -->
+                        <div class="bg-white rounded-[24px] p-6 shadow-sm border-2 border-indigo-50 flex items-center justify-between hover:shadow-md transition-shadow">
+                            <div>
+                                <p class="text-sm text-indigo-400 font-bold mb-1 uppercase tracking-wider">Tổng công việc</p>
+                                <p id="stat-total" class="text-4xl font-extrabold text-indigo-600">0</p>
+                            </div>
+                            <div class="w-14 h-14 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-500 text-2xl shadow-inner transform rotate-3">
+                                📋
+                            </div>
+                        </div>
+
+                        <!-- Completed -->
+                        <div class="bg-white rounded-[24px] p-6 shadow-sm border-2 border-emerald-50 flex items-center justify-between hover:shadow-md transition-shadow">
+                            <div>
+                                <p class="text-sm text-emerald-400 font-bold mb-1 uppercase tracking-wider">Đã hoàn thành</p>
+                                <p id="stat-completed" class="text-4xl font-extrabold text-emerald-500">0</p>
+                            </div>
+                            <div class="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-500 text-2xl shadow-inner transform -rotate-3">
+                                🎉
+                            </div>
+                        </div>
+
+                        <!-- Pending -->
+                        <div class="bg-white rounded-[24px] p-6 shadow-sm border-2 border-amber-50 flex items-center justify-between hover:shadow-md transition-shadow">
+                            <div>
+                                <p class="text-sm text-amber-400 font-bold mb-1 uppercase tracking-wider">Còn dang dở</p>
+                                <p id="stat-pending" class="text-4xl font-extrabold text-amber-500">0</p>
+                            </div>
+                            <div class="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-500 text-2xl shadow-inner transform rotate-6">
+                                🏃
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- DATA & STATE MANAGEMENT ---
+        const DAYS_OF_WEEK = [
+            { name: 'Thứ 2', color: 'pink', emoji: '🌸' },
+            { name: 'Thứ 3', color: 'orange', emoji: '🍊' },
+            { name: 'Thứ 4', color: 'yellow', emoji: '🌻' },
+            { name: 'Thứ 5', color: 'green', emoji: '🍀' },
+            { name: 'Thứ 6', color: 'blue', emoji: '🌊' },
+            { name: 'Thứ 7', color: 'purple', emoji: '🍇' },
+            { name: 'Chủ Nhật', color: 'rose', emoji: '🍓' }
+        ];
+        
+        let appState = {
+            diary: '',
+            diaryFont: 'font-quicksand',
+            tasks: [],
+            theme: 'pink'
+        };
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            loadState();
+            setTheme(appState.theme || 'pink');
+            
+            // Setup Diary Date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date-text').innerText = new Date().toLocaleDateString('vi-VN', options);
+            
+            // Setup Diary Content & Font
+            const diaryElement = document.getElementById('diary-content');
+            diaryElement.value = appState.diary;
+            
+            // Handle font selection
+            const fontSelect = document.getElementById('diary-font-select');
+            if(fontSelect.querySelector(`option[value="${appState.diaryFont}"]`)){
+                fontSelect.value = appState.diaryFont;
+            }
+            
+            // Apply font class, keep base classes
+            diaryElement.className = `w-full h-full p-4 md:p-6 bg-transparent resize-none focus:outline-none text-gray-700 transition-all rounded-2xl ${appState.diaryFont}`;
+            
+            // Setup Hide Save Status
+            document.getElementById('save-status').style.opacity = '0';
+
+            renderCalendar();
+            updateStatistics();
+        };
+
+        function loadState() {
+            const saved = localStorage.getItem('myCuteSpaceState');
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                    if (!appState.tasks) appState.tasks = [];
+                    if (!appState.diaryFont) appState.diaryFont = 'font-quicksand';
+                } catch(e) { console.error("Error loading state", e); }
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('myCuteSpaceState', JSON.stringify(appState));
+            updateStatistics(); 
+        }
+
+        // --- MOBILE MENU LOGIC ---
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                // Open
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                // Close
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        // --- UI UTILS ---
+        function showToast(message, type = 'normal') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastIcon = document.getElementById('toast-icon');
+            
+            toastMsg.innerText = message;
+            
+            if(type === 'error') {
+                toast.className = "fixed top-5 left-1/2 transform -translate-x-1/2 bg-white border-2 border-red-200 text-red-500 px-6 py-3 rounded-full shadow-[0_10px_25px_rgba(254,226,226,0.8)] transition-all duration-300 z-50 font-bold flex items-center gap-2";
+                toastIcon.innerText = "❌";
+            } else {
+                toast.className = "fixed top-5 left-1/2 transform -translate-x-1/2 bg-white border-2 border-pink-200 text-pink-600 px-6 py-3 rounded-full shadow-[0_10px_25px_rgba(251,207,232,0.8)] transition-all duration-300 z-50 font-bold flex items-center gap-2";
+                toastIcon.innerText = "✨";
+            }
+
+            // Animate in
+            toast.classList.remove('opacity-0', '-translate-y-10');
+            
+            // Animate out
+            setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-10');
+            }, 3000);
+        }
+
+        function switchTab(tabId) {
+            // Hide all
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            
+            // Reset button styles
+            const navButtons = [
+                { btn: document.getElementById('btn-diary'), icon: '📝' },
+                { btn: document.getElementById('btn-tasks'), icon: '📅' },
+                { btn: document.getElementById('btn-stats'), icon: '📊' }
+            ];
+            
+            navButtons.forEach(item => {
+                item.btn.className = `w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all font-semibold text-left text-gray-500 hover:bg-pink-50 hover:text-pink-500 border border-transparent hover:border-pink-100`;
+            });
+
+            // Show target
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            // Highlight active button
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            activeBtn.className = `w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all font-bold text-left text-pink-600 bg-pink-100 shadow-[0_4px_14px_rgba(251,207,232,0.6)] transform hover:scale-[1.02]`;
+
+            if (tabId === 'stats') {
+                updateStatistics(); // Re-trigger animation
+            }
+            
+            // Close mobile menu if on mobile
+            if(window.innerWidth < 768) {
+                toggleMobileMenu();
+            }
+        }
+
+        // --- DIARY LOGIC ---
+        let saveTimeout;
+        function autoSaveDiary() {
+            const content = document.getElementById('diary-content').value;
+            appState.diary = content;
+            
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                saveState();
+                const status = document.getElementById('save-status');
+                status.style.opacity = '1';
+                setTimeout(() => status.style.opacity = '0', 2000);
+            }, 800);
+        }
+
+        function changeDiaryFont() {
+            const select = document.getElementById('diary-font-select');
+            const diaryElement = document.getElementById('diary-content');
+            
+            // Reset fonts
+            diaryElement.classList.remove('font-inter', 'font-lora', 'font-dancing', 'font-fira', 'font-quicksand');
+            diaryElement.classList.add(select.value);
+            
+            appState.diaryFont = select.value;
+            saveState();
+        }
+
+        // --- THEME LOGIC ---
+        const themes = {
+            pink: { 50: '#fdf2f8', 100: '#fce7f3', 200: '#fbcfe8', 400: '#f472b6', 500: '#ec4899', 600: '#db2777', 700: '#be185d', 900: '#831843' },
+            blue: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' },
+            green: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 900: '#14532d' },
+            red: { 50: '#fef2f2', 100: '#fee2e2', 200: '#fecaca', 400: '#f87171', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c', 900: '#7f1d1d' },
+            brown: { 50: '#f5f5f4', 100: '#e7e5e4', 200: '#d6d3d1', 400: '#a8a29e', 500: '#78716c', 600: '#44403c', 700: '#292524', 900: '#1c1917' },
+            black: { 50: '#f4f4f5', 100: '#e4e4e7', 200: '#d4d4d8', 400: '#71717a', 500: '#52525b', 600: '#3f3f46', 700: '#27272a', 900: '#18181b' },
+            white: { 50: '#ffffff', 100: '#f8fafc', 200: '#f1f5f9', 400: '#cbd5e1', 500: '#94a3b8', 600: '#64748b', 700: '#475569', 900: '#0f172a' }
+        };
+
+        function setTheme(colorName) {
+            const root = document.documentElement;
+            const theme = themes[colorName];
+            if(!theme) return;
+            
+            Object.keys(theme).forEach(key => {
+                root.style.setProperty(`--theme-${key}`, theme[key]);
+            });
+            
+            appState.theme = colorName;
+            saveState();
+        }
+
+        // --- TASKS & CALENDAR LOGIC ---
+        const colorClasses = {
+            'pink': { bg: 'bg-pink-50', border: 'border-pink-100', header: 'bg-pink-100 text-pink-700', btn: 'bg-pink-400 hover:bg-pink-500 ring-pink-200', check: 'checked:bg-pink-400 checked:border-pink-400' },
+            'orange': { bg: 'bg-orange-50', border: 'border-orange-100', header: 'bg-orange-100 text-orange-700', btn: 'bg-orange-400 hover:bg-orange-500 ring-orange-200', check: 'checked:bg-orange-400 checked:border-orange-400' },
+            'yellow': { bg: 'bg-yellow-50', border: 'border-yellow-100', header: 'bg-yellow-100 text-yellow-700', btn: 'bg-yellow-400 hover:bg-yellow-500 ring-yellow-200', check: 'checked:bg-yellow-400 checked:border-yellow-400' },
+            'green': { bg: 'bg-green-50', border: 'border-green-100', header: 'bg-green-100 text-green-700', btn: 'bg-green-400 hover:bg-green-500 ring-green-200', check: 'checked:bg-green-400 checked:border-green-400' },
+            'blue': { bg: 'bg-blue-50', border: 'border-blue-100', header: 'bg-blue-100 text-blue-700', btn: 'bg-blue-400 hover:bg-blue-500 ring-blue-200', check: 'checked:bg-blue-400 checked:border-blue-400' },
+            'purple': { bg: 'bg-purple-50', border: 'border-purple-100', header: 'bg-purple-100 text-purple-700', btn: 'bg-purple-400 hover:bg-purple-500 ring-purple-200', check: 'checked:bg-purple-400 checked:border-purple-400' },
+            'rose': { bg: 'bg-rose-50', border: 'border-rose-100', header: 'bg-rose-100 text-rose-700', btn: 'bg-rose-400 hover:bg-rose-500 ring-rose-200', check: 'checked:bg-rose-400 checked:border-rose-400' }
+        };
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+
+            DAYS_OF_WEEK.forEach(dayInfo => {
+                const dayName = dayInfo.name;
+                const theme = colorClasses[dayInfo.color];
+                
+                // Filter tasks for this day
+                const dayTasks = appState.tasks.filter(t => t.day === dayName);
+                
+                const col = document.createElement('div');
+                col.className = `rounded-3xl shadow-sm border-2 ${theme.border} flex flex-col overflow-hidden bg-white hover:shadow-md transition-shadow`;
+                
+                let tasksHtml = dayTasks.map(task => `
+                    <div class="flex items-start gap-3 p-3 hover:${theme.bg} rounded-2xl group transition-colors border border-transparent hover:${theme.border}">
+                        <div class="mt-0.5 relative flex items-center justify-center flex-shrink-0">
+                            <input type="checkbox" id="task-${task.id}" class="task-checkbox peer appearance-none w-5 h-5 border-2 border-gray-200 rounded-lg ${theme.check} cursor-pointer transition-all" ${task.completed ? 'checked' : ''} onchange="toggleTask('${task.id}')">
+                            <svg class="absolute w-3.5 h-3.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <label for="task-${task.id}" class="text-sm flex-1 cursor-pointer transition-all font-semibold break-words ${task.completed ? 'text-gray-400 line-through' : 'text-gray-700'}">${escapeHtml(task.text)}</label>
+                        <button onclick="deleteTask('${task.id}')" class="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-400 transition-all p-1 flex-shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                `).join('');
+
+                if(dayTasks.length === 0) {
+                    tasksHtml = `<div class="text-center p-4 text-xs text-gray-400 font-medium italic">Chưa có lịch trình ~ ☁️</div>`;
+                }
+
+                col.innerHTML = `
+                    <div class="px-4 py-3 border-b-2 ${theme.border} ${theme.header} font-bold text-center text-base flex justify-center items-center gap-2">
+                        ${dayInfo.emoji} ${dayName}
+                    </div>
+                    <div class="p-3 flex-1 flex flex-col gap-1 overflow-y-auto max-h-64 custom-scrollbar">
+                        ${tasksHtml}
+                    </div>
+                    <div class="p-3 border-t-2 ${theme.border} bg-gray-50/50 mt-auto">
+                        <form onsubmit="addTask(event, '${dayName}')" class="flex gap-2">
+                            <input type="text" id="input-${dayName}" placeholder="Thêm việc..." class="flex-1 text-sm bg-white border border-gray-200 rounded-xl px-3 py-2.5 focus:ring-4 focus:${theme.btn.split(' ')[2]} focus:border-transparent transition-all outline-none font-medium" required>
+                            <button type="submit" class="${theme.btn} text-white px-3 py-2.5 rounded-xl transition-all shadow-sm transform hover:scale-105 active:scale-95 flex-shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                            </button>
+                        </form>
+                    </div>
+                `;
+                grid.appendChild(col);
+            });
+        }
+
+        function addTask(event, day) {
+            event.preventDefault();
+            const input = document.getElementById(`input-${day}`);
+            const text = input.value.trim();
+            if (text) {
+                appState.tasks.push({
+                    id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                    text: text,
+                    day: day,
+                    completed: false
+                });
+                input.value = '';
+                saveState();
+                renderCalendar();
+            }
+        }
+
+        function toggleTask(id) {
+            const task = appState.tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveState();
+                renderCalendar();
+            }
+        }
+
+        function deleteTask(id) {
+            appState.tasks = appState.tasks.filter(t => t.id !== id);
+            saveState();
+            renderCalendar();
+        }
+
+        function clearCompletedTasks() {
+            const initialLength = appState.tasks.length;
+            appState.tasks = appState.tasks.filter(t => !t.completed);
+            
+            if (appState.tasks.length < initialLength) {
+                saveState();
+                renderCalendar();
+                showToast('Đã dọn dẹp các công việc hoàn thành nha! 🧹');
+            }
+        }
+
+        // --- STATISTICS LOGIC ---
+        function updateStatistics() {
+            const total = appState.tasks.length;
+            const completed = appState.tasks.filter(t => t.completed).length;
+            const pending = total - completed;
+            
+            let percentage = 0;
+            if (total > 0) {
+                percentage = Math.round((completed / total) * 100);
+            }
+
+            // Update Text Stats
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-completed').innerText = completed;
+            document.getElementById('stat-pending').innerText = pending;
+            
+            const progressText = document.getElementById('progress-text');
+            progressText.innerText = `${percentage}%`;
+
+            // Motivation Text
+            const motiText = document.getElementById('motivation-text');
+            if (total === 0) motiText.innerText = "Hãy thêm công việc để bắt đầu! 🌻";
+            else if (percentage === 0) motiText.innerText = "Chưa hoàn thành việc nào, cố lên bạn nha! 💪";
+            else if (percentage < 50) motiText.innerText = "Khởi đầu tốt, tiếp tục phát huy nhé! 🌱";
+            else if (percentage < 100) motiText.innerText = "Gần xong rồi, bạn làm rất tuyệt! ✨";
+            else motiText.innerText = "Giỏi quá! Bạn đã hoàn thành tất cả! 🏆";
+
+            // Update SVG Circle (Circumference = 2 * PI * r = 2 * 3.14159 * 90 ≈ 565.48)
+            const circle = document.getElementById('progress-circle');
+            const circumference = 565.48; 
+            const offset = circumference - (percentage / 100) * circumference;
+            
+            setTimeout(() => {
+                circle.style.strokeDashoffset = offset;
+                
+                // Color gradient mapping based on progress
+                if(percentage === 100) {
+                    circle.setAttribute("stroke", "url(#gradient-success)");
+                    progressText.className = "text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-emerald-400 to-emerald-500";
+                } else if (percentage > 50) {
+                    circle.setAttribute("stroke", "url(#gradient)");
+                    progressText.className = "text-5xl font-extrabold text-pink-500";
+                } else {
+                    circle.setAttribute("stroke", "url(#gradient-warning)");
+                    progressText.className = "text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-amber-400 to-amber-500";
+                }
+            }, 100);
+        }
+
+        // --- MUSIC PLAYER LOGIC ---
+        function loadMusic() {
+            const urlInput = document.getElementById('music-url').value.trim();
+            const container = document.getElementById('music-player-container');
+            
+            if (!urlInput) return;
+
+            // Spotify Parser
+            if (urlInput.includes('spotify.com')) {
+                const typeMatch = urlInput.match(/(track|playlist|album)\/([a-zA-Z0-9]+)/);
+                if (typeMatch) {
+                    const type = typeMatch[1];
+                    const id = typeMatch[2];
+                    // Spotify compact player height is 152px, removing padding from container
+                    container.className = "rounded-2xl overflow-hidden bg-white shadow-sm border border-pink-100 mt-2";
+                    container.innerHTML = `<iframe src="https://open.spotify.com/embed/${type}/${id}?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+                    document.getElementById('music-url').value = ''; 
+                    showToast('Đã mở nhạc Spotify 🎶');
+                    return;
+                }
+            } 
+            // YouTube Parser (Audio only visual illusion via iframe height)
+            else if (urlInput.includes('youtube.com') || urlInput.includes('youtu.be')) {
+                let videoId = '';
+                if (urlInput.includes('youtu.be/')) {
+                    videoId = urlInput.split('youtu.be/')[1].split('?')[0];
+                } else if (urlInput.includes('youtube.com/watch') || urlInput.includes('youtube.com/shorts')) {
+                    const match = urlInput.match(/[?&]v=([^&]+)/) || urlInput.match(/shorts\/([^/?]+)/);
+                    if(match) videoId = match[1];
+                }
+                
+                if (videoId) {
+                    container.className = "rounded-2xl overflow-hidden bg-white shadow-sm border border-pink-100 mt-2";
+                    // Using small height for YT to feel like an audio player
+                    container.innerHTML = `<iframe width="100%" height="152" src="https://www.youtube.com/embed/${videoId}?autoplay=1" title="YouTube audio player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+                    document.getElementById('music-url').value = ''; 
+                    showToast('Đã mở nhạc YouTube 🎵');
+                    return;
+                }
+            }
+
+            showToast('Link không đúng. Copy link Spotify hoặc YouTube nha! 🥺', 'error');
+        }
+
+        // Util to prevent XSS
+        function escapeHtml(unsafe) {
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
